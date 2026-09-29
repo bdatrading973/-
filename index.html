@@ -87,16 +87,9 @@
         transparent 100%);
       filter: blur(18px);
     }
-    .floor-reveal {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      -webkit-mask-image: linear-gradient(to bottom, transparent 42%, #000 68%, #000 100%);
-      mask-image: linear-gradient(to bottom, transparent 42%, #000 68%, #000 100%);
-    }
     .glint {
       mix-blend-mode: screen;
-      height: 2px;
+      height: 3px;
       border-radius: 999px;
       transform-origin: center;
       background: linear-gradient(90deg,
@@ -146,57 +139,57 @@
   </div>
   <script>
     const LAMPS = [
-      { x: 46, y: 30, s: 0.85, delay: 120,
-        glints: [{ x: 48, y: 44, len: 4.2, rot: -4 }] },
-      { x: 55.3, y: 23.3, s: 1.05, delay: 380,
-        glints: [{ x: 56.2, y: 40.8, len: 6.4, rot: -8 }] },
-      { x: 40, y: 26, s: 0.8, delay: 620,
-        glints: [{ x: 42, y: 43, len: 3.6, rot: 6 }] },
-      { x: 58.8, y: 21.4, s: 1.05, delay: 860,
-        glints: [{ x: 62.8, y: 36.4, len: 5.6, rot: 9 }] },
-      { x: 22.7, y: 19.7, s: 1.15, delay: 1120,
+      { x: 40, y: 26, s: 0.9, delay: 700,
+        glints: [{ x: 42, y: 43, len: 4.4, rot: 6 }] },
+      { x: 22.7, y: 19.7, s: 1.15, delay: 1450,
         glints: [
-          { x: 22.5, y: 36.9, len: 7.2, rot: -7 },
-          { x: 26.4, y: 42.5, len: 4.6, rot: 5 }
+          { x: 22.5, y: 36.9, len: 7.6, rot: -7 },
+          { x: 26.4, y: 42.5, len: 5.2, rot: 5 }
         ] },
-      { x: 63.1, y: 18.6, s: 1.12, delay: 1360,
-        glints: [{ x: 62.8, y: 36.4, len: 4.2, rot: 14 }] },
-      { x: 21.1, y: 15.3, s: 1.2, delay: 1620,
+      { x: 21.1, y: 15.3, s: 1.2, delay: 2150,
         glints: [
-          { x: 20.2, y: 36.7, len: 5.8, rot: 8 },
-          { x: 18.1, y: 40.6, len: 4.4, rot: -11 },
-          { x: 14.5, y: 43.1, len: 5.2, rot: 6 }
+          { x: 20.2, y: 36.7, len: 6.2, rot: 8 },
+          { x: 18.1, y: 40.6, len: 4.8, rot: -11 },
+          { x: 14.5, y: 43.1, len: 5.4, rot: 6 }
         ] },
-      { x: 68.4, y: 15.3, s: 1.18, delay: 1880,
+      { x: 16.3, y: 4.2, s: 1.35, delay: 2800,
         glints: [
-          { x: 69.5, y: 40.6, len: 8.4, rot: -5 },
-          { x: 70.0, y: 35.8, len: 4.2, rot: 10 }
+          { x: 13.0, y: 35.6, len: 7.2, rot: -13 },
+          { x: 6.6, y: 37.2, len: 5.0, rot: 9 },
+          { x: 17.7, y: 36.1, len: 4.2, rot: 4 }
         ] },
-      { x: 16.3, y: 4.2, s: 1.35, delay: 2160,
+      { x: 46, y: 30, s: 0.95, delay: 3700,
+        glints: [{ x: 48, y: 44, len: 5.0, rot: -4 }] },
+      { x: 55.3, y: 23.3, s: 1.08, delay: 4250,
+        glints: [{ x: 56.2, y: 40.8, len: 6.8, rot: -8 }] },
+      { x: 58.8, y: 21.4, s: 1.08, delay: 4750,
+        glints: [{ x: 62.8, y: 36.4, len: 6.0, rot: 9 }] },
+      { x: 63.1, y: 18.6, s: 1.12, delay: 5200,
+        glints: [{ x: 62.8, y: 36.4, len: 4.6, rot: 14 }] },
+      { x: 68.4, y: 15.3, s: 1.18, delay: 5650,
         glints: [
-          { x: 13.0, y: 35.6, len: 6.8, rot: -13 },
-          { x: 6.6, y: 37.2, len: 4.6, rot: 9 },
-          { x: 17.7, y: 36.1, len: 3.8, rot: 4 }
+          { x: 69.5, y: 40.6, len: 8.8, rot: -5 },
+          { x: 70.0, y: 35.8, len: 4.6, rot: 10 }
         ] },
-      { x: 72.5, y: 19.4, s: 1.08, delay: 2400,
-        glints: [{ x: 72.5, y: 40.8, len: 8.2, rot: 3 }] },
-      { x: 75.9, y: 10.8, s: 1.2, delay: 2660,
+      { x: 72.5, y: 19.4, s: 1.08, delay: 6100,
+        glints: [{ x: 72.5, y: 40.8, len: 8.6, rot: 3 }] },
+      { x: 75.9, y: 10.8, s: 1.2, delay: 6550,
         glints: [
-          { x: 78.9, y: 35.8, len: 5.8, rot: -9 },
-          { x: 80.2, y: 40.8, len: 4.8, rot: 7 }
+          { x: 78.9, y: 35.8, len: 6.2, rot: -9 },
+          { x: 80.2, y: 40.8, len: 5.2, rot: 7 }
         ] },
-      { x: 85.0, y: 4.4, s: 1.28, delay: 2940,
+      { x: 85.0, y: 4.4, s: 1.28, delay: 7000,
         glints: [
-          { x: 90.2, y: 34.2, len: 6.6, rot: -16 },
-          { x: 82.3, y: 40.6, len: 3.6, rot: 8 }
+          { x: 90.2, y: 34.2, len: 7.0, rot: -16 },
+          { x: 82.3, y: 40.6, len: 4.2, rot: 8 }
         ] },
-      { x: 97.0, y: 7.8, s: 1.3, delay: 3240,
-        glints: [{ x: 90.2, y: 34.2, len: 4.8, rot: 7 }] }
+      { x: 97.0, y: 7.8, s: 1.3, delay: 7450,
+        glints: [{ x: 90.2, y: 34.2, len: 5.2, rot: 7 }] }
     ];
 
-    const LOOP = 11200;
-    const FADE_AT = 8200;
-    const FADE_LEN = 1400;
+    const LOOP = 14500;
+    const FADE_AT = 11200;
+    const FADE_LEN = 1200;
 
     const revealsRoot = document.getElementById('reveals');
     const fxRoot = document.getElementById('fx');
@@ -208,20 +201,12 @@
     aisle.style.height = '34%';
     fxRoot.appendChild(aisle);
 
-    const floorReveal = document.createElement('div');
-    floorReveal.className = 'floor-reveal';
-    const floorImg = document.createElement('img');
-    floorImg.src = 'bdatrading-auction-hero-bg.png';
-    floorImg.alt = '';
-    floorReveal.appendChild(floorImg);
-    revealsRoot.appendChild(floorReveal);
-
     LAMPS.forEach((lamp, i) => {
       const reveal = document.createElement('div');
       reveal.className = 'reveal';
-      const rx = 30 * lamp.s;
-      const ry = 48 * lamp.s;
-      const my = Math.min(72, lamp.y + 14);
+      const rx = 13 * lamp.s;
+      const ry = 36 * lamp.s;
+      const my = Math.min(68, lamp.y + 16);
       reveal.style.webkitMaskImage =
         `radial-gradient(ellipse ${rx}% ${ry}% at ${lamp.x}% ${my}%, #000 0%, rgba(0,0,0,.72) 28%, rgba(0,0,0,.28) 52%, transparent 78%)`;
       reveal.style.maskImage = reveal.style.webkitMaskImage;
@@ -316,6 +301,7 @@
 
     const params = new URLSearchParams(location.search);
     let t0 = performance.now() - Number(params.get('t') || 0);
+    addEventListener('pointerdown', () => { t0 = performance.now(); });
 
     function frame(now) {
       const { local, g } = globalGain(now - t0);
@@ -359,9 +345,7 @@
           el.style.top = y + '%';
         });
       }
-      const avg = sum / nodes.length;
-      aisle.style.opacity = String(Math.min(0.55, avg * 0.6));
-      floorReveal.style.opacity = String(Math.min(1, avg * 1.15));
+      aisle.style.opacity = String(Math.min(0.4, (sum / nodes.length) * 0.45));
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
