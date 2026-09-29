@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BDATRADING — зажигание фонарей</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+    .stage {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      overflow: hidden;
+    }
+    .plate, .reveal img, .floor-reveal img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      user-select: none;
+      pointer-events: none;
+    }
+    .reveal {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+    }
+    .bloom, .beam, .floor, .glint, .aisle, .mote {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .bloom {
+      mix-blend-mode: screen;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background:
+        radial-gradient(circle,
+          rgba(255, 248, 230, 0.7) 0%,
+          rgba(255, 210, 140, 0.28) 12%,
+          rgba(255, 150, 50, 0.08) 34%,
+          transparent 68%);
+      filter: blur(10px);
+    }
+    .core {
+      position: absolute;
+      left: 50%;
+      top: 42%;
+      width: 7px;
+      height: 7px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: #fff;
+      box-shadow:
+        0 0 6px 2px #fff,
+        0 0 16px 4px rgba(255, 214, 140, 0.95),
+        0 0 36px 8px rgba(255, 150, 40, 0.45);
+    }
+    .core .streak {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.95), transparent);
+      filter: blur(0.3px);
+    }
+    .core .streak.h { width: 54px; height: 1.5px; }
+    .core .streak.v {
+      width: 1.5px;
+      height: 32px;
+      background: linear-gradient(transparent, rgba(255,255,255,.9), transparent);
+    }
+    .beam {
+      mix-blend-mode: screen;
+      transform: translate(-50%, 0);
+      background: linear-gradient(to bottom,
+        rgba(255, 196, 110, 0.16),
+        rgba(255, 150, 50, 0.05) 40%,
+        transparent 100%);
+      filter: blur(18px);
+    }
+    .floor-reveal {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 42%, #000 68%, #000 100%);
+      mask-image: linear-gradient(to bottom, transparent 42%, #000 68%, #000 100%);
+    }
+    .glint {
+      mix-blend-mode: screen;
+      height: 2px;
+      border-radius: 999px;
+      transform-origin: center;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 236, 200, 0.15) 18%,
+        #fff 48%,
+        rgba(255, 214, 150, 0.7) 62%,
+        transparent 100%);
+      box-shadow:
+        0 0 6px 1px rgba(255, 244, 220, 0.85),
+        0 8px 14px rgba(255, 160, 50, 0.35);
+    }
+    .aisle {
+      left: 18%;
+      width: 64%;
+      mix-blend-mode: screen;
+      background: radial-gradient(ellipse at 50% 0%,
+        rgba(255, 186, 90, 0.28),
+        rgba(255, 140, 40, 0.08) 42%,
+        transparent 70%);
+      filter: blur(6px);
+    }
+    .mote {
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: rgba(255, 230, 190, 0.9);
+      mix-blend-mode: screen;
+      box-shadow: 0 0 6px rgba(255, 200, 120, 0.8);
+    }
+    .vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% 42%, transparent 36%, rgba(0,0,0,.62) 100%),
+        linear-gradient(to top, rgba(0,0,0,.45), transparent 28%);
+    }
+  </style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <img class="plate" src="hero-dark.png" alt="" />
+    <div id="reveals"></div>
+    <div id="fx"></div>
+    <div class="vignette"></div>
+  </div>
+  <script>
+    const LAMPS = [
+      { x: 46, y: 30, s: 0.85, delay: 120,
+        glints: [{ x: 48, y: 44, len: 4.2, rot: -4 }] },
+      { x: 55.3, y: 23.3, s: 1.05, delay: 380,
+        glints: [{ x: 56.2, y: 40.8, len: 6.4, rot: -8 }] },
+      { x: 40, y: 26, s: 0.8, delay: 620,
+        glints: [{ x: 42, y: 43, len: 3.6, rot: 6 }] },
+      { x: 58.8, y: 21.4, s: 1.05, delay: 860,
+        glints: [{ x: 62.8, y: 36.4, len: 5.6, rot: 9 }] },
+      { x: 22.7, y: 19.7, s: 1.15, delay: 1120,
+        glints: [
+          { x: 22.5, y: 36.9, len: 7.2, rot: -7 },
+          { x: 26.4, y: 42.5, len: 4.6, rot: 5 }
+        ] },
+      { x: 63.1, y: 18.6, s: 1.12, delay: 1360,
+        glints: [{ x: 62.8, y: 36.4, len: 4.2, rot: 14 }] },
+      { x: 21.1, y: 15.3, s: 1.2, delay: 1620,
+        glints: [
+          { x: 20.2, y: 36.7, len: 5.8, rot: 8 },
+          { x: 18.1, y: 40.6, len: 4.4, rot: -11 },
+          { x: 14.5, y: 43.1, len: 5.2, rot: 6 }
+        ] },
+      { x: 68.4, y: 15.3, s: 1.18, delay: 1880,
+        glints: [
+          { x: 69.5, y: 40.6, len: 8.4, rot: -5 },
+          { x: 70.0, y: 35.8, len: 4.2, rot: 10 }
+        ] },
+      { x: 16.3, y: 4.2, s: 1.35, delay: 2160,
+        glints: [
+          { x: 13.0, y: 35.6, len: 6.8, rot: -13 },
+          { x: 6.6, y: 37.2, len: 4.6, rot: 9 },
+          { x: 17.7, y: 36.1, len: 3.8, rot: 4 }
+        ] },
+      { x: 72.5, y: 19.4, s: 1.08, delay: 2400,
+        glints: [{ x: 72.5, y: 40.8, len: 8.2, rot: 3 }] },
+      { x: 75.9, y: 10.8, s: 1.2, delay: 2660,
+        glints: [
+          { x: 78.9, y: 35.8, len: 5.8, rot: -9 },
+          { x: 80.2, y: 40.8, len: 4.8, rot: 7 }
+        ] },
+      { x: 85.0, y: 4.4, s: 1.28, delay: 2940,
+        glints: [
+          { x: 90.2, y: 34.2, len: 6.6, rot: -16 },
+          { x: 82.3, y: 40.6, len: 3.6, rot: 8 }
+        ] },
+      { x: 97.0, y: 7.8, s: 1.3, delay: 3240,
+        glints: [{ x: 90.2, y: 34.2, len: 4.8, rot: 7 }] }
+    ];
+
+    const LOOP = 11200;
+    const FADE_AT = 8200;
+    const FADE_LEN = 1400;
+
+    const revealsRoot = document.getElementById('reveals');
+    const fxRoot = document.getElementById('fx');
+    const nodes = [];
+
+    const aisle = document.createElement('div');
+    aisle.className = 'aisle';
+    aisle.style.top = '58%';
+    aisle.style.height = '34%';
+    fxRoot.appendChild(aisle);
+
+    const floorReveal = document.createElement('div');
+    floorReveal.className = 'floor-reveal';
+    const floorImg = document.createElement('img');
+    floorImg.src = 'bdatrading-auction-hero-bg.png';
+    floorImg.alt = '';
+    floorReveal.appendChild(floorImg);
+    revealsRoot.appendChild(floorReveal);
+
+    LAMPS.forEach((lamp, i) => {
+      const reveal = document.createElement('div');
+      reveal.className = 'reveal';
+      const rx = 30 * lamp.s;
+      const ry = 48 * lamp.s;
+      const my = Math.min(72, lamp.y + 14);
+      reveal.style.webkitMaskImage =
+        `radial-gradient(ellipse ${rx}% ${ry}% at ${lamp.x}% ${my}%, #000 0%, rgba(0,0,0,.72) 28%, rgba(0,0,0,.28) 52%, transparent 78%)`;
+      reveal.style.maskImage = reveal.style.webkitMaskImage;
+      const img = document.createElement('img');
+      img.src = 'bdatrading-auction-hero-bg.png';
+      img.alt = '';
+      reveal.appendChild(img);
+      revealsRoot.appendChild(reveal);
+
+      const bloom = document.createElement('div');
+      bloom.className = 'bloom';
+      const bw = 22 * lamp.s;
+      bloom.style.width = bw + '%';
+      bloom.style.height = (bw * 0.72) + '%';
+      bloom.style.left = lamp.x + '%';
+      bloom.style.top = lamp.y + '%';
+      const core = document.createElement('div');
+      core.className = 'core';
+      core.innerHTML = '<span class="streak h"></span><span class="streak v"></span>';
+      bloom.appendChild(core);
+      fxRoot.appendChild(bloom);
+
+      const beam = document.createElement('div');
+      beam.className = 'beam';
+      beam.style.left = lamp.x + '%';
+      beam.style.top = (lamp.y + 1) + '%';
+      beam.style.width = (16 * lamp.s) + '%';
+      beam.style.height = (42 * lamp.s) + '%';
+      fxRoot.appendChild(beam);
+
+      const glints = lamp.glints.map((g) => {
+        const el = document.createElement('div');
+        el.className = 'glint';
+        el.style.left = g.x + '%';
+        el.style.top = g.y + '%';
+        el.style.width = g.len + '%';
+        el.dataset.rot = String(g.rot);
+        el.dataset.phase = String(i * 1.7 + g.x);
+        fxRoot.appendChild(el);
+        return el;
+      });
+
+      const motes = [0, 1].map((k) => {
+        const el = document.createElement('div');
+        el.className = 'mote';
+        el.dataset.phase = String((i * 0.37 + k * 0.5) % 1);
+        el.dataset.spread = String((k === 0 ? -1 : 1) * (1.2 + (i % 3) * 0.4));
+        fxRoot.appendChild(el);
+        return el;
+      });
+
+      nodes.push({ lamp, reveal, bloom, beam, glints, motes });
+    });
+
+    function flick(u) {
+      if (u < 0) return 0;
+      const keys = [
+        [0, 0],
+        [60, 1],
+        [120, 0.04],
+        [180, 0.92],
+        [250, 0.1],
+        [330, 1],
+        [410, 0.45],
+        [500, 0.96],
+        [680, 1]
+      ];
+      if (u < 680) {
+        for (let i = 1; i < keys.length; i++) {
+          if (u <= keys[i][0]) {
+            const [t0, v0] = keys[i - 1];
+            const [t1, v1] = keys[i];
+            const p = (u - t0) / (t1 - t0);
+            const s = p * p * (3 - 2 * p);
+            return v0 + (v1 - v0) * s;
+          }
+        }
+      }
+      return 0.9 + 0.1 * Math.sin(u * 0.0045);
+    }
+
+    function globalGain(t) {
+      const local = ((t % LOOP) + LOOP) % LOOP;
+      if (local < FADE_AT) return { local, g: 1 };
+      if (local < FADE_AT + FADE_LEN) {
+        const p = (local - FADE_AT) / FADE_LEN;
+        const s = p * p * (3 - 2 * p);
+        return { local, g: 1 - s };
+      }
+      return { local, g: 0 };
+    }
+
+    const params = new URLSearchParams(location.search);
+    let t0 = performance.now() - Number(params.get('t') || 0);
+
+    function frame(now) {
+      const { local, g } = globalGain(now - t0);
+      let sum = 0;
+      for (const n of nodes) {
+        const u = local - n.lamp.delay;
+        const level = flick(u) * g;
+        sum += level;
+        n.reveal.style.opacity = String(Math.min(1, level));
+        const hot = u > 0 && u < 520 ? 1 : 0.42;
+        n.bloom.style.opacity = String(Math.min(1, level * hot));
+        const pulse = u > 0 && u < 140 ? 1.22 : 1;
+        n.bloom.style.transform = `translate(-50%, -50%) scale(${pulse})`;
+        n.beam.style.opacity = String(level * 0.55 * hot);
+
+        n.glints.forEach((el, gi) => {
+          const gu = u - 180 - gi * 70;
+          let gl = flick(gu) * g;
+          if (gu > 400) {
+            const phase = Number(el.dataset.phase);
+            const spike = Math.pow(Math.max(0, Math.sin(local * 0.007 + phase)), 16);
+            gl = Math.min(1, gl * (0.55 + 0.45 * (0.65 + 0.35 * Math.sin(local * 0.003 + phase))) + spike * gl);
+          }
+          const rot = Number(el.dataset.rot);
+          const sweep = gu > 0 && gu < 280 ? (gu / 280) : 1;
+          const scale = 0.25 + 0.75 * Math.min(1, sweep);
+          const shift = (1 - Math.min(1, Math.max(0, sweep))) * -18;
+          el.style.opacity = String(Math.min(1, gl));
+          el.style.transform = `translate(calc(-50% + ${shift}px), -50%) rotate(${rot}deg) scaleX(${scale})`;
+        });
+
+        n.motes.forEach((el) => {
+          const phase = Number(el.dataset.phase);
+          const spread = Number(el.dataset.spread);
+          const life = ((local * 0.00012 + phase) % 1);
+          const visible = level * (life < 0.15 ? life / 0.15 : life > 0.85 ? (1 - life) / 0.15 : 1);
+          el.style.opacity = String(Math.max(0, visible * 0.75));
+          const x = n.lamp.x + spread * life * 1.6;
+          const y = n.lamp.y + 4 + life * 28 * n.lamp.s;
+          el.style.left = x + '%';
+          el.style.top = y + '%';
+        });
+      }
+      const avg = sum / nodes.length;
+      aisle.style.opacity = String(Math.min(0.55, avg * 0.6));
+      floorReveal.style.opacity = String(Math.min(1, avg * 1.15));
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>
